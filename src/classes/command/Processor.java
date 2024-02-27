@@ -15,4 +15,8 @@ public class Processor {
       System.out.println(command.decorate());
     }
   }
+
+  public void clearCommands() {
+    pipeline.clear();
+  }
 }

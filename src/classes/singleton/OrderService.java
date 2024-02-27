@@ -53,6 +53,7 @@ public class OrderService {
     createReceipt(customer);
     addCommandToProcessor();
     sendToDecorate(customer);
+    resetCommandList();
   }
   public void createReceipt(Customer customer) {
     Receipt receipt = new Receipt(customer.getId(), "receipt");
@@ -132,48 +133,81 @@ public class OrderService {
   public void changeItemToCommand(Customer customer) {
     Map<Integer, Object> customerShoppingCart = getShoppingCart(customer);
 
+    // cutcommand
     if (customerShoppingCart != null) {
       for (Map.Entry<Integer, Object> entry : customerShoppingCart.entrySet()) {
         Object item = entry.getValue();
-        if (item.toString().contains("Pants")) {
-          ;
+
+        // Pants
+        if (item instanceof Pants) {
           Pants pants = ((Pants) item);
-          PantsCommand pantsCommand = new PantsCommand(pants);
-          addPantsCommand(pantsCommand);
 
-        } else if (item.toString().contains("Skirt")) {
+          // ska klippas
+          if (pants.getLength().contains("Short") || pants.getLength().contains("Medium") || pants.getLength().contains("Long")) {
+            CutCommand cutCommand = new CutCommand(item);
+            addCutCommand(cutCommand);
+          }
+          if (pants.getFit().contains("Slim") || pants.getFit().contains("Skinny") || pants.getFit().contains("Baggy")) {
+            SewCommand sewCommand = new SewCommand(item);
+            addSewCommand(sewCommand);
+          }
+        }
+
+        // Skirt
+        if (item instanceof Skirt) {
           Skirt skirt = ((Skirt) item);
-          SkirtCommand skirtCommand = new SkirtCommand(skirt);
-          addSkirtCommand(skirtCommand);
 
-        } else if (item.toString().contains("TShirt")) {
+          if (skirt.getWaistLine().contains("Low") || skirt.getWaistLine().contains("Medium") || skirt.getWaistLine().contains("High")) {
+            CutCommand cutCommand = new CutCommand(item);
+            addCutCommand(cutCommand);
+          }
+          if (skirt.getPattern().contains("Stripes") || skirt.getPattern().contains("Checkered") || skirt.getPattern().contains("Wavy")) {
+            SewCommand sewCommand = new SewCommand(item);
+            addSewCommand(sewCommand);
+          }
+        }
+
+        // TShirt
+        if (item instanceof TShirt) {
           TShirt tShirt = ((TShirt) item);
-          TShirtCommand tShirtCommand = new TShirtCommand(tShirt);
-          addTShirtCommand(tShirtCommand);
 
+          if (tShirt.getSleeves().contains("Sleeveless") || tShirt.getSleeves().contains("Short") || tShirt.getSleeves().contains("Long")) {
+            CutCommand cutCommand = new CutCommand(item);
+            addCutCommand(cutCommand);
+          }
+          if (tShirt.getNeck().contains("Polo") || tShirt.getNeck().contains("Crewneck") || tShirt.getNeck().contains("Turtleneck")) {
+            SewCommand sewCommand = new SewCommand(item);
+            addSewCommand(sewCommand);
+          }
         }
       }
+
     }
   }
 
-  public void addPantsCommand(PantsCommand pantsCommand) {
-    commandList.add(pantsCommand);
+  public void addCutCommand(CutCommand cutCommand) {
+    commandList.add(cutCommand);
   }
 
-  public void addTShirtCommand(TShirtCommand tShirtCommand) {
-    commandList.add(tShirtCommand);
+  public void addSewCommand(SewCommand sewCommand) {
+    commandList.add(sewCommand);
   }
-  public void addSkirtCommand(SkirtCommand skirtCommand) {
-    commandList.add(skirtCommand);
+
+  public void resetCommandList() {
+    commandList.clear();
   }
   public void addCommandToProcessor() {
+    processor.clearCommands();
+
     for (CommandInterface item : commandList) {
 
       processor.addCommand(item);
     }
-    orderPlaced.notifyObserver();
+    //orderPlaced.notifyObserver();
   }
   public void sendToDecorate(Customer customer) {
+    orderPlaced.notifyObserver();
+
     processor.execute();
     orderComplete.notifyObserver();
     clearShoppingCart(customer);

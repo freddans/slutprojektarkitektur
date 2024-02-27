@@ -501,7 +501,7 @@ public class Main {
             System.out.println();
             System.out.println("Pick your Pattern");
             System.out.println("1. Checkered");
-            System.out.println("2. Solid");
+            System.out.println("2. Wavy");
             System.out.println("3. Stripes");
             System.out.print("Input 💬: ");
             int lengthChoice = sc.nextInt();
@@ -512,7 +512,7 @@ public class Main {
                 patternCheck = true;
                 break;
               case 2:
-                pattern = "Solid";
+                pattern = "Wavy";
                 patternCheck = true;
                 break;
               case 3:
@@ -694,7 +694,7 @@ public class Main {
             System.out.println("Pick your Neck");
             System.out.println("1. Crewneck");
             System.out.println("2. Turtleneck");
-            System.out.println("3. V-Neck");
+            System.out.println("3. Polo");
             System.out.print("Input 💬: ");
             int lengthChoice = sc.nextInt();
 
@@ -708,7 +708,7 @@ public class Main {
                 neckCheck = true;
                 break;
               case 3:
-                neck = "V-Neck";
+                neck = "Polo";
                 neckCheck = true;
                 break;
               default:
