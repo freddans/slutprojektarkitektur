@@ -3,12 +3,29 @@ package classes.command;
 import classes.Pants;
 import classes.Skirt;
 import classes.TShirt;
+import classes.builder.PantsBuilder;
+import classes.builder.SkirtBuilder;
+import classes.builder.TShirtBuilder;
 
 public class CutCommand implements CommandInterface {
   private Object item;
+  PantsBuilder pantsBuilder;
+  SkirtBuilder skirtBuilder;
+  TShirtBuilder tShirtBuilder;
 
-  public CutCommand(Object item) {
+  public CutCommand(Object item, PantsBuilder pantsBuilder) {
     this.item = item;
+    this.pantsBuilder = pantsBuilder;
+  }
+
+  public CutCommand(Object item, SkirtBuilder skirtBuilder) {
+    this.item = item;
+    this.skirtBuilder = skirtBuilder;
+  }
+
+  public CutCommand(Object item, TShirtBuilder tShirtBuilder) {
+    this.item = item;
+    this.tShirtBuilder = tShirtBuilder;
   }
 
   @Override
@@ -17,23 +34,25 @@ public class CutCommand implements CommandInterface {
     // Pants
     if (item instanceof Pants) {
       Pants pants = ((Pants) item);
-      if (pants.getLength().contains("Short") || pants.getLength().contains("Medium") || pants.getLength().contains("Long")) {
-        return "✂️ Cutting pants to " + pants.getLength();
-      }
+      pantsBuilder.addLength(pantsBuilder.getChosenLength());
+
+      return "✂️ Cutting pants to " + pants.getLength();
     }
     // TShirt
     else if (item instanceof TShirt) {
       TShirt tShirt = ((TShirt) item);
-      if (tShirt.getSleeves().contains("Sleeveless") || tShirt.getSleeves().contains("Short") || tShirt.getSleeves().contains("Long")) {
-        return "✂️ Cutting sleeves to " + tShirt.getSleeves();
-      }
+      tShirtBuilder.addSleeves(tShirtBuilder.getChosenSleeves());
+
+      return "✂️ Cutting sleeves to " + tShirt.getSleeves();
+
     }
     // Skirt
     else if (item instanceof Skirt) {
       Skirt skirt = ((Skirt) item);
-      if (skirt.getWaistLine().contains("Low") || skirt.getWaistLine().contains("Medium") || skirt.getWaistLine().contains("High")) {
-        return "✂️ Cutting waistline to " + skirt.getWaistLine();
-      }
+      skirtBuilder.addWaistLine(skirtBuilder.getChosenWaistLine());
+
+      return "✂️ Cutting waistline to " + skirt.getWaistLine();
+
     }
     return null;
   }

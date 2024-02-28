@@ -12,14 +12,10 @@ import java.util.Scanner;
 public class Main {
   public static void main(String[] args) {
 
-    test();
+    start();
   }
 
   public static void start() {
-
-  }
-
-  public static void test() {
     OrderService orderService = OrderService.getInstance();
 
     Scanner sc = new Scanner(System.in);
@@ -353,9 +349,13 @@ public class Main {
         .addPrice(59.99)
         .addMaterial(material)
         .addColor(color)
-        .addFit(fit)
-        .addLength(length)
         .build();
+    pantsBuilder.setChosenLength(length);
+    pantsBuilder.setChosenFit(fit);
+
+
+    orderService.addToPantsBuilderMap(pants, pantsBuilder);
+
 
     // Add pants to list
     orderService.addToShoppingCart(loggedInCustomer, pants);
@@ -545,9 +545,11 @@ public class Main {
         .addPrice(15.99)
         .addMaterial(material)
         .addColor(color)
-        .addWaistLine(waistLine)
-        .addPattern(pattern)
         .build();
+    skirtBuilder.setChosenPattern(pattern);
+    skirtBuilder.setChosenWaistLine(waistLine);
+
+    orderService.addToSkirtBuilderMap(skirt, skirtBuilder);
 
     // Add pants to list
     orderService.addToShoppingCart(loggedInCustomer, skirt);
@@ -740,9 +742,11 @@ public class Main {
         .addPrice(8.49)
         .addMaterial(material)
         .addColor(color)
-        .addSleeves(sleeves)
-        .addNeck(neck)
         .build();
+    tShirtBuilder.setChosenNeck(neck);
+    tShirtBuilder.setChosenSleeves(sleeves);
+
+    orderService.addToTShirtBuilderMap(tShirt, tShirtBuilder);
 
     // Add pants to list
     orderService.addToShoppingCart(loggedInCustomer, tShirt);

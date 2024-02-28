@@ -98,6 +98,8 @@ public class Pants extends Clothing {
     this.length = length;
   }
 
+
+
   @Override
   public String toString() {
     return "Pants {size: " + this.getSize() + ", price: $" + this.getPrice() + ", material: " + this.getMaterial() + ", color: " + this.getColor() + ", fit: " + fit + ", length: " + length + "}";

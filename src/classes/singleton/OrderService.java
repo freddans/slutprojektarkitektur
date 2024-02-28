@@ -1,6 +1,9 @@
 package classes.singleton;
 
 import classes.*;
+import classes.builder.PantsBuilder;
+import classes.builder.SkirtBuilder;
+import classes.builder.TShirtBuilder;
 import classes.command.*;
 import classes.observer.CeoSensor;
 import classes.observer.OrderSubject;
@@ -8,6 +11,9 @@ import classes.observer.OrderSubject;
 import java.util.*;
 
 public class OrderService {
+  private static Map<Pants, PantsBuilder> pantsBuilderMap;
+  private static Map<Skirt, SkirtBuilder> skirtBuilderMap;
+  private static Map<TShirt, TShirtBuilder> tShirtBuilderMap;
   private static OrderService instance;
   private final List<CommandInterface> commandList;
   private Map<Integer, Map<Integer, Object>> shoppingCart;
@@ -21,6 +27,9 @@ public class OrderService {
   private final Processor processor;
 
   public OrderService() {
+    this.pantsBuilderMap = new HashMap<>();
+    this.skirtBuilderMap = new HashMap<>();
+    this.tShirtBuilderMap = new HashMap<>();
     this.shoppingCart = new HashMap<>();
     this.orderCounter = new HashMap<>();
     this.ceo = new CEO(1, "Wigells VD");
@@ -36,6 +45,18 @@ public class OrderService {
       instance.getInstance();
     }
     return instance;
+  }
+
+  public void addToPantsBuilderMap(Pants pants, PantsBuilder pantsBuilder) {
+    pantsBuilderMap.put(pants, pantsBuilder);
+  }
+
+  public void addToSkirtBuilderMap(Skirt skirt, SkirtBuilder skirtBuilder) {
+    skirtBuilderMap.put(skirt, skirtBuilder);
+  }
+
+  public void addToTShirtBuilderMap(TShirt tShirt, TShirtBuilder tShirtBuilder) {
+    tShirtBuilderMap.put(tShirt, tShirtBuilder);
   }
 
   public void setUpObservers() {
@@ -55,6 +76,7 @@ public class OrderService {
     sendToDecorate(customer);
     resetCommandList();
   }
+
   public void createReceipt(Customer customer) {
     Receipt receipt = new Receipt(customer.getId(), "receipt");
     double pantsPrice = 0;
@@ -141,47 +163,43 @@ public class OrderService {
         // Pants
         if (item instanceof Pants) {
           Pants pants = ((Pants) item);
+          PantsBuilder pantsBuilder = pantsBuilderMap.get(pants);
 
-          // ska klippas
-          if (pants.getLength().contains("Short") || pants.getLength().contains("Medium") || pants.getLength().contains("Long")) {
-            CutCommand cutCommand = new CutCommand(item);
-            addCutCommand(cutCommand);
-          }
-          if (pants.getFit().contains("Slim") || pants.getFit().contains("Skinny") || pants.getFit().contains("Baggy")) {
-            SewCommand sewCommand = new SewCommand(item);
-            addSewCommand(sewCommand);
-          }
+          // ska klippas LENGTH
+          CutCommand cutCommand = new CutCommand(item, pantsBuilder);
+          addCutCommand(cutCommand);
+
+          SewCommand sewCommand = new SewCommand(item, pantsBuilder);
+          addSewCommand(sewCommand);
+
         }
 
         // Skirt
         if (item instanceof Skirt) {
           Skirt skirt = ((Skirt) item);
+          SkirtBuilder skirtBuilder = skirtBuilderMap.get(skirt);
 
-          if (skirt.getWaistLine().contains("Low") || skirt.getWaistLine().contains("Medium") || skirt.getWaistLine().contains("High")) {
-            CutCommand cutCommand = new CutCommand(item);
-            addCutCommand(cutCommand);
-          }
-          if (skirt.getPattern().contains("Stripes") || skirt.getPattern().contains("Checkered") || skirt.getPattern().contains("Wavy")) {
-            SewCommand sewCommand = new SewCommand(item);
-            addSewCommand(sewCommand);
-          }
+          CutCommand cutCommand = new CutCommand(item, skirtBuilder);
+          addCutCommand(cutCommand);
+
+          SewCommand sewCommand = new SewCommand(item, skirtBuilder);
+          addSewCommand(sewCommand);
+
         }
 
         // TShirt
         if (item instanceof TShirt) {
           TShirt tShirt = ((TShirt) item);
+          TShirtBuilder tShirtBuilder = tShirtBuilderMap.get(tShirt);
 
-          if (tShirt.getSleeves().contains("Sleeveless") || tShirt.getSleeves().contains("Short") || tShirt.getSleeves().contains("Long")) {
-            CutCommand cutCommand = new CutCommand(item);
-            addCutCommand(cutCommand);
-          }
-          if (tShirt.getNeck().contains("Polo") || tShirt.getNeck().contains("Crewneck") || tShirt.getNeck().contains("Turtleneck")) {
-            SewCommand sewCommand = new SewCommand(item);
-            addSewCommand(sewCommand);
-          }
+          CutCommand cutCommand = new CutCommand(item, tShirtBuilder);
+          addCutCommand(cutCommand);
+
+          SewCommand sewCommand = new SewCommand(item, tShirtBuilder);
+          addSewCommand(sewCommand);
+
         }
       }
-
     }
   }
 
@@ -196,6 +214,7 @@ public class OrderService {
   public void resetCommandList() {
     commandList.clear();
   }
+
   public void addCommandToProcessor() {
     processor.clearCommands();
 
@@ -203,8 +222,8 @@ public class OrderService {
 
       processor.addCommand(item);
     }
-    //orderPlaced.notifyObserver();
   }
+
   public void sendToDecorate(Customer customer) {
     orderPlaced.notifyObserver();
 
@@ -212,6 +231,7 @@ public class OrderService {
     orderComplete.notifyObserver();
     clearShoppingCart(customer);
   }
+
   public void addToShoppingCart(Customer customer, Object item) {
     int orderId = getNextOrderId(customer);
     if (shoppingCart.containsKey(customer.getId())) {
@@ -223,6 +243,7 @@ public class OrderService {
       shoppingCart.put(customer.getId(), orderMap);
     }
   }
+
   public void printShoppingCart(Customer customer) {
     double totalPrice = 0;
     int totalItems = 0;
@@ -232,18 +253,23 @@ public class OrderService {
     if (customerShoppingCart != null) {
       for (Map.Entry<Integer, Object> entry : customerShoppingCart.entrySet()) {
         Object item = entry.getValue();
-        if (item.toString().contains("Pants")) {
-          System.out.println("👖 " + item.toString());
+        if (item instanceof Pants) {
+          Pants pants = ((Pants) item);
+
+          System.out.println("👖 " + pants.getName());
           totalPrice += ((Pants) item).getPrice();
           totalItems++;
 
-        } else if (item.toString().contains("Skirt")) {
-          System.out.println("👗 " + item.toString());
+
+        } else if (item instanceof Skirt) {
+          Skirt skirt = ((Skirt) item);
+
+          System.out.println("👗 " + skirt.getName());
           totalPrice += ((Skirt) item).getPrice();
           totalItems++;
-
-        } else if (item.toString().contains("TShirt")) {
-          System.out.println("👕 " + item.toString());
+        } else if (item instanceof TShirt) {
+          TShirt tShirt = ((TShirt) item);
+          System.out.println("👕 " + tShirt.getName());
           totalPrice += ((TShirt) item).getPrice();
           totalItems++;
 

@@ -4,6 +4,8 @@ import classes.Pants;
 
 public class PantsBuilder {
   private Pants pants = new Pants();
+  private String chosenFit;
+  private String chosenLength;
 
   public PantsBuilder addId(int id) {
     if (id <= 0) {
@@ -75,6 +77,22 @@ public class PantsBuilder {
       pants.setLength(length);
       return this;
     }
+  }
+
+  public String getChosenFit() {
+    return chosenFit;
+  }
+
+  public void setChosenFit(String chosenFit) {
+    this.chosenFit = chosenFit;
+  }
+
+  public String getChosenLength() {
+    return chosenLength;
+  }
+
+  public void setChosenLength(String chosenLength) {
+    this.chosenLength = chosenLength;
   }
 
   public Pants build() {

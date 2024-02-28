@@ -4,6 +4,8 @@ import classes.TShirt;
 
 public class TShirtBuilder {
   private TShirt tShirt = new TShirt();
+  private String chosenNeck;
+  private String chosenSleeves;
 
   public TShirtBuilder addId(int id) {
     if (id <= 0) {
@@ -75,6 +77,22 @@ public class TShirtBuilder {
       tShirt.setNeck(neck);
       return this;
     }
+  }
+
+  public String getChosenNeck() {
+    return chosenNeck;
+  }
+
+  public void setChosenNeck(String chosenNeck) {
+    this.chosenNeck = chosenNeck;
+  }
+
+  public String getChosenSleeves() {
+    return chosenSleeves;
+  }
+
+  public void setChosenSleeves(String chosenSleeves) {
+    this.chosenSleeves = chosenSleeves;
   }
 
   public TShirt build() {

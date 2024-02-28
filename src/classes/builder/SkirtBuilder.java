@@ -4,6 +4,8 @@ import classes.Skirt;
 
 public class SkirtBuilder {
   private Skirt skirt = new Skirt();
+  private String chosenPattern;
+  private String chosenWaistLine;
 
   public SkirtBuilder addId(int id) {
     if (id <= 0) {
@@ -74,6 +76,22 @@ public class SkirtBuilder {
       skirt.setPattern(pattern);
       return this;
     }
+  }
+
+  public String getChosenPattern() {
+    return chosenPattern;
+  }
+
+  public void setChosenPattern(String chosenPattern) {
+    this.chosenPattern = chosenPattern;
+  }
+
+  public String getChosenWaistLine() {
+    return chosenWaistLine;
+  }
+
+  public void setChosenWaistLine(String chosenWaistLine) {
+    this.chosenWaistLine = chosenWaistLine;
   }
 
   public Skirt build() {
